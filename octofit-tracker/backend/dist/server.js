@@ -6,21 +6,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const mongoose_1 = __importDefault(require("mongoose"));
 const routes_1 = __importDefault(require("./routes"));
+const database_1 = require("./config/database");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 8000;
-const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/octofit_db';
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(routes_1.default);
 app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', message: 'OctoFit Tracker backend is running' });
 });
-mongoose_1.default.connect(mongoUri)
+(0, database_1.connectToDatabase)()
     .then(() => {
-    console.log(`Connected to MongoDB at ${mongoUri}`);
     app.listen(port, () => {
         console.log(`OctoFit Tracker backend listening on port ${port}`);
     });

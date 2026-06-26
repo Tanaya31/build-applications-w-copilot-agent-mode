@@ -3,14 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const models_1 = require("../models");
+const database_1 = require("../config/database");
 dotenv_1.default.config();
 // Seed the octofit_db database with test data
 async function seedDatabase() {
-    const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/octofit_db';
-    await mongoose_1.default.connect(mongoUri);
+    const connection = await (0, database_1.connectToDatabase)();
     console.log('Connected to MongoDB for seeding');
     await Promise.all([
         models_1.User.deleteMany({}),
@@ -41,7 +40,7 @@ async function seedDatabase() {
         { title: 'Strength Builder', difficulty: 'Beginner', durationMinutes: 25, focus: 'Full Body' },
     ]);
     console.log('Seed data inserted successfully');
-    await mongoose_1.default.disconnect();
+    await connection.close();
 }
 seedDatabase().catch((error) => {
     console.error('Seed failed', error);
